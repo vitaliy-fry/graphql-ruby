@@ -4,8 +4,10 @@ module GraphQL
   class Schema
 
     class Object
+      extend GraphQL::Schema::Member::DSLMethods
       include GraphQL::Schema::Member
       extend GraphQL::Schema::Member::AcceptsDefinition
+      include GraphQL::Schema::Member::HasFields
 
       # @return [Object] the application object this type is wrapping
       attr_reader :object
@@ -17,9 +19,6 @@ module GraphQL
         @object = object
         @context = context
       end
-
-      extend GraphQL::Schema::Member::HasFields
-      field_class GraphQL::Schema::Field
 
       class << self
         def implements(*new_interfaces)
