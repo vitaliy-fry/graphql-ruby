@@ -19,8 +19,9 @@ module GraphQL
   #     value :PEPPERS
   #   end
   class Schema
-    class Enum < GraphQL::Schema::Member
+    class Enum
       extend GraphQL::Schema::Member::AcceptsDefinition
+      include GraphQL::Schema::Member
 
       class << self
         # Define a value for this enum

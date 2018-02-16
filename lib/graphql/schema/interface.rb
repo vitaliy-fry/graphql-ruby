@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 module GraphQL
   class Schema
-    class Interface < GraphQL::Schema::Member
+    module Interface
+      include GraphQL::Schema::Member
       extend GraphQL::Schema::Member::HasFields
       extend GraphQL::Schema::Member::AcceptsDefinition
-      field_class GraphQL::Schema::Field
+      field_class(GraphQL::Schema::Field)
+      def self.extended(child_class)
+        if !(child_class.singleton_class < GraphQL::Schema::Member::HasFields)
+          make_interface(self, child_class)
+        end
+      end
 
       class << self
         # When this interface is added to a `GraphQL::Schema::Object`,
@@ -39,6 +45,24 @@ module GraphQL
             type_defn.resolve_type = method(:resolve_type)
           end
           type_defn
+        end
+
+        def make_interface(parent_class, child_class)
+          child_class.class_eval do
+            puts "make_interface: #{child_class} < #{parent_class}(#{parent_class.field_class})"
+            include GraphQL::Schema::Member
+            extend GraphQL::Schema::Member::HasFields
+            extend GraphQL::Schema::Interface
+            field_class(parent_class.field_class)
+            class << self
+              alias :old_extended :extended
+              def extended(next_child_class)
+                puts "mi extended: #{next_child_class} < #{self}"
+                GraphQL::Schema::Interface.make_interface(self, next_child_class)
+                old_extended(next_child_class)
+              end
+            end
+          end
         end
       end
     end

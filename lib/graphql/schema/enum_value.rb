@@ -25,9 +25,9 @@ module GraphQL
     #     # use it for these enums:
     #     enum_value_class CustomEnumValue
     #   end
-    class EnumValue < GraphQL::Schema::Member
+    class EnumValue
       include GraphQL::Schema::Member::AcceptsDefinition
-
+      include GraphQL::Schema::Member
       attr_reader :graphql_name
 
       # @return [Class] The enum type that owns this value

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module GraphQL
   class Schema
-    class Member
+    module Member
       # Shared code for Object and Interface
       module HasFields
         # Add a field to this object or interface with the given definition
@@ -16,7 +16,7 @@ module GraphQL
 
         # @return [Hash<String => GraphQL::Schema::Field>] Fields on this object, keyed by name, including inherited fields
         def fields
-          inherited_fields = (superclass.is_a?(HasFields) ? superclass.fields : {})
+          inherited_fields = (defined?(super) ? super : {})
           # Local overrides take precedence over inherited fields
           inherited_fields.merge(own_fields)
         end

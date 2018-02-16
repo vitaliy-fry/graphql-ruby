@@ -2,7 +2,7 @@
 
 module GraphQL
   class Schema
-    class Member
+    module Member
       # Support for legacy `accepts_definitions` functions.
       #
       # Keep the legacy handler hooked up. Class-based types and fields

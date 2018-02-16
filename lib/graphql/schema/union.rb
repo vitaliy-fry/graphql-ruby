@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 module GraphQL
   class Schema
-    class Union < GraphQL::Schema::Member
+    module Union
       extend GraphQL::Schema::Member::AcceptsDefinition
+      include GraphQL::Schema::Member
 
       class << self
         def possible_types(*types)

@@ -2,7 +2,9 @@
 
 module GraphQL
   class Schema
-    class Object < GraphQL::Schema::Member
+
+    class Object
+      include GraphQL::Schema::Member
       extend GraphQL::Schema::Member::AcceptsDefinition
 
       # @return [Object] the application object this type is wrapping
@@ -22,13 +24,11 @@ module GraphQL
       class << self
         def implements(*new_interfaces)
           new_interfaces.each do |int|
-            if int.is_a?(Class) && int < GraphQL::Schema::Interface
+            if int.is_a?(Module)
               # Add the graphql field defns
               int.fields.each do |name, field|
                 own_fields[name] = field
               end
-              # And call the implemented hook
-              int.apply_implemented(self)
             else
               int.all_fields.each do |f|
                 field(f.name, field: f)
