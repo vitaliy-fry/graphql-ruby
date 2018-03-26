@@ -2,8 +2,8 @@
 module GraphQL
   class Schema
     module Union
+      extend GraphQL::Schema::Member::Concern
       extend GraphQL::Schema::Member::AcceptsDefinition
-      extend ActiveSupport::Concern
       include GraphQL::Schema::Member
       extend GraphQL::Schema::Member::DSLMethods
 

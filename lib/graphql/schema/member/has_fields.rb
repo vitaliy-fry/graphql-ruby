@@ -4,7 +4,7 @@ module GraphQL
     module Member
       # Shared code for Object and Interface
       module HasFields
-        extend ActiveSupport::Concern
+        extend GraphQL::Schema::Member::Concern
 
         included do
           class << self

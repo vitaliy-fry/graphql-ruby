@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'graphql/schema/member/accepts_definition'
+require 'graphql/schema/member/concern'
 require "graphql/relay/type_extensions"
 
 module GraphQL
@@ -9,7 +10,7 @@ module GraphQL
   # @api private
   class Schema
     module Member
-      extend ActiveSupport::Concern
+      extend GraphQL::Schema::Member::Concern
       # Adds a layer of caching over user-supplied `.to_graphql` methods.
       # Users override `.to_graphql`, but all runtime code should use `.graphql_definition`.
       module CachedGraphQLDefinition
