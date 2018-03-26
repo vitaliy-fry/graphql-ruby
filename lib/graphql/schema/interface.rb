@@ -66,6 +66,10 @@ module GraphQL
               # This is how interface inheritance is implemented
               child_class.include(GraphQL::Schema::Interface)
               child_class.extend(GraphQL::Schema::Member::DSLMethods)
+              # TODO why doesn't inheritance handle this ?
+              fields.each do |name, field|
+                child_class.own_fields[name] = field
+              end
             end
             super
           end

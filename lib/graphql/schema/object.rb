@@ -26,8 +26,11 @@ module GraphQL
             if int.is_a?(Module)
               # Add the graphql field defns
               int.fields.each do |name, field|
+                # TODO don't share `owner` here? Should there be a new field instance?
+                # TODO or, let the Ruby object model provide these?
                 own_fields[name] = field
               end
+              int.apply_implemented(self)
             else
               int.all_fields.each do |f|
                 field(f.name, field: f)

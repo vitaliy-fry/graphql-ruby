@@ -29,6 +29,7 @@ describe GraphQL::Schema::Interface do
         implements NewInterface1
       end
 
+      assert_equal 2, NewInterface1.fields.size
       assert_equal 2, new_object_1.fields.size
       assert new_object_1.method_defined?(:id)
 
@@ -57,13 +58,12 @@ describe GraphQL::Schema::Interface do
     end
 
     it "can specify a resolve_type method" do
-      interface = Class.new(GraphQL::Schema::Interface) do
+      interface = Module.new do
+        include GraphQL::Schema::Interface
+        graphql_name "MyInterface"
+
         def self.resolve_type(_object, _context)
           "MyType"
-        end
-
-        def self.name
-          "MyInterface"
         end
       end
       interface_type = interface.to_graphql
@@ -71,10 +71,9 @@ describe GraphQL::Schema::Interface do
     end
 
     it "can specify orphan types" do
-      interface = Class.new(GraphQL::Schema::Interface) do
-        def self.name
-          "MyInterface"
-        end
+      interface = Module.new do
+        include GraphQL::Schema::Interface
+        graphql_name "MyInterface"
 
         orphan_types Dummy::CheeseType, Dummy::HoneyType
       end
@@ -85,10 +84,12 @@ describe GraphQL::Schema::Interface do
   end
 
   it 'supports global_id_field' do
-    object = Class.new(GraphQL::Schema::Interface) do
+    object = Module.new do
+      include GraphQL::Schema::Interface
       graphql_name 'GlobalIdFieldTest'
       global_id_field :uuid
     end.to_graphql
+
     uuid_field = object.fields["uuid"]
 
     assert_equal GraphQL::NonNullType, uuid_field.type.class

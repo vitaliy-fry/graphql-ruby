@@ -38,6 +38,7 @@ module GraphQL
         Int = "Int"
       end
 
+      # This is to support `!` backwards-compat
       module DSLMethods
       end
 

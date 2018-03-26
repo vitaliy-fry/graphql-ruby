@@ -11,16 +11,20 @@ module GraphQL
             # Add a field to this object or interface with the given definition
             # @see {GraphQL::Schema::Field#initialize} for method signature
             # @return [void]
-            def field(*args, &block)
+            def field(*args, **kwargs, &block)
               kwargs[:owner] = self
-              field_defn = field_class.new(*args, &block)
+              field_defn = field_class.new(*args, **kwargs, &block)
               add_field(field_defn)
               nil
             end
 
             # @return [Hash<String => GraphQL::Schema::Field>] Fields on this object, keyed by name, including inherited fields
             def fields
-              inherited_fields = (defined?(super) ? super : {})
+              inherited_fields = if respond_to?(:superclass) && superclass.respond_to?(:fields)
+                superclass.fields
+              else
+                {}
+              end
               # Local overrides take precedence over inherited fields
               inherited_fields.merge(own_fields)
             end
@@ -52,8 +56,6 @@ module GraphQL
             def global_id_field(field_name)
               field field_name, "ID", null: false, resolve: GraphQL::Relay::GlobalIdResolve.new(type: self)
             end
-
-            private
 
             # @return [Array<GraphQL::Schema::Field>] Fields defined on this class _specifically_, not parent classes
             def own_fields

@@ -11,7 +11,8 @@ describe GraphQL::Schema::Union do
 
   describe ".to_graphql" do
     it "creates a UnionType" do
-      union = Class.new(GraphQL::Schema::Union) do
+      union = Module.new do
+        include GraphQL::Schema::Union
         possible_types Jazz::Musician, Jazz::Ensemble
 
         def self.name
@@ -25,13 +26,12 @@ describe GraphQL::Schema::Union do
     end
 
     it "can specify a resolve_type method" do
-      union = Class.new(GraphQL::Schema::Union) do
+      union = Module.new do
+        include GraphQL::Schema::Union
+
+        graphql_name "MyUnion"
         def self.resolve_type(_object, _context)
           "MyType"
-        end
-
-        def self.name
-          "MyUnion"
         end
       end
       union_type = union.to_graphql
