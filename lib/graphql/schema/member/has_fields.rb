@@ -20,13 +20,28 @@ module GraphQL
 
             # @return [Hash<String => GraphQL::Schema::Field>] Fields on this object, keyed by name, including inherited fields
             def fields
-              inherited_fields = if respond_to?(:superclass) && superclass.respond_to?(:fields)
-                superclass.fields
-              else
-                {}
+              f = {}
+
+              if respond_to?(:superclass) && superclass.respond_to?(:fields)
+                f.merge!(superclass.fields)
               end
+
+              own_interfaces.each do |int|
+                if int.is_a?(Module)
+                  int.fields.each do |name, field|
+                    f[name] = field
+                  end
+                else
+                  int.all_fields.each do |legacy_f|
+                    f[legacy_f.name] = GraphQL::Schema::Field.new(legacy_f.name, field: legacy_f, owner: int)
+                  end
+                end
+              end
+
               # Local overrides take precedence over inherited fields
-              inherited_fields.merge(own_fields)
+              f.merge!(own_fields)
+
+              f
             end
 
             # Register this field with the class, overriding a previous one if needed
@@ -60,6 +75,10 @@ module GraphQL
             # @return [Array<GraphQL::Schema::Field>] Fields defined on this class _specifically_, not parent classes
             def own_fields
               @own_fields ||= {}
+            end
+
+            def own_interfaces
+              @own_interfaces ||= []
             end
           end
         end
