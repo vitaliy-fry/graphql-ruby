@@ -100,6 +100,18 @@ describe GraphQL::Schema::Interface do
     )
   end
 
+  describe "using `include`" do
+    it "raises" do
+      err = assert_raises RuntimeError do
+        Class.new(GraphQL::Schema::Object) do
+          include(Jazz::GloballyIdentifiableType)
+        end
+      end
+
+      assert_includes err.message, "implements(Jazz::GloballyIdentifiableType)"
+    end
+  end
+
   describe "in queries" do
     it "works" do
       query_str = <<-GRAPHQL

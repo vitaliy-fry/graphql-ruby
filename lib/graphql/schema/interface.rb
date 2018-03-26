@@ -36,7 +36,14 @@ module GraphQL
               child_class.include(GraphQL::Schema::Interface)
               child_class.extend(GraphQL::Schema::Member::DSLMethods)
               child_class.own_interfaces << self
+            elsif child_class < GraphQL::Schema::Object
+              # This is being included into an object type, make sure it's using `implements(...)`
+              backtrace_line = caller(0, 10).find { |line| line.include?("schema/object.rb") && line.include?("in `implements'")}
+              if !backtrace_line
+                raise "Attach interfaces using `implements(#{self})`, not `include(#{self})`"
+              end
             end
+
             super
           end
 
