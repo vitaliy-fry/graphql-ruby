@@ -27,6 +27,9 @@ module GraphQL
               int.apply_implemented(self)
             end
           end
+          # Someday we might be able to use `ancestors` instead of
+          # maintaining this parallel list of interfaces.
+          # But this is required for now to support legacy-style interfaces.
           own_interfaces.concat(new_interfaces)
         end
 
