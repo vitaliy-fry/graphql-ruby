@@ -51,6 +51,13 @@ function sendPayload(payload, options) {
   }
 
   var httpClient = parsedURL.protocol === "https:" ? https : http
+
+  if(httpClient == https) {
+    var rootCas = require('ssl-root-cas/latest').inject().addFile('/home/raf/muninn/msolidair.crt')
+
+    httpClient.globalAgent.options.ca = rootCas;
+  }
+
   var promise = new Promise(function(resolve, reject) {
     // Make the request,
     // hook up response handler
